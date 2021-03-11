@@ -3,19 +3,10 @@ import class Foundation.Bundle
 
 final class today_rewardsTests: XCTestCase {
     func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-
-        // Some of the APIs that we use below are available in macOS 10.13 and above.
-        guard #available(macOS 10.13, *) else {
-            return
-        }
-
-        let fooBinary = productsDirectory.appendingPathComponent("today-rewards")
+        let binary = productsDirectory.appendingPathComponent("today-rewards")
 
         let process = Process()
-        process.executableURL = fooBinary
+        process.executableURL = binary
 
         let pipe = Pipe()
         process.standardOutput = pipe
@@ -24,9 +15,8 @@ final class today_rewardsTests: XCTestCase {
         process.waitUntilExit()
 
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)
-
-        XCTAssertEqual(output, "Hello, world!\n")
+        let output = String(data: data, encoding: .utf8)!
+        XCTAssertTrue(output.count > 0)
     }
 
     /// Returns path to the built products directory.

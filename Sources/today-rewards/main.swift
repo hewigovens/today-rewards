@@ -11,11 +11,10 @@ func readAddress() -> String {
     return CommandLine.arguments[1]
 }
 
-func fetchRewards(address: String) {
+func fetchRewards(address: String, sema: DispatchSemaphore) {
     let limit = 100
     let url = "https://api.binance.org/v1/staking/chains/bsc/delegators/\(address)/rewards?limit=\(limit)&offset=0"
 
-    let sema = DispatchSemaphore( value: 0)
     URLSession.shared.dataTaskPublisher(for: URL(string: url)!)
         .tryMap{ $0.data }
         .decode(type: Rewards.self, decoder: JSONDecoder())
@@ -23,30 +22,34 @@ func fetchRewards(address: String) {
             print(error)
             sema.signal()
         } receiveValue: {
-            print($0)
+            print(address: address, rewards: $0)
             sema.signal()
         }
         .store(in: &bag)
-    sema.wait();
 }
 
-func print(_ rewards: Rewards) {
+func print(address: String, rewards: Rewards) {
 
-    if let reward = rewards.rewardDetails.first {
-        print("Delegator: \(reward.delegator)")
-    }
-
+    let redacted = address.redacted
+    print("Delegator: \(redacted)")
     let map = rewards.groupByDate()
     let keys = map.keys.sorted(by: { $0 < $1 })
-    for k in keys {
+
+    for (i, k) in keys.enumerated() {
         guard let rewards = map[k] else { continue }
         let total: Double = rewards.map { $0.reward }.reduce(0.0, +)
-        print("\(k) Rewards: \(String(format: "%.4f", total)) BNB")
+        let message = "\(k) Rewards: \(String(format: "%.4f", total)) BNB"
+        print(message)
+        if i == keys.count - 1 {
+            notify(title: redacted, message: message)
+        }
     }
 }
 
 func main() {
-    fetchRewards(address: readAddress())
+    let sema = DispatchSemaphore(value: 0)
+    fetchRewards(address: readAddress(), sema: sema)
+    sema.wait()
 }
 
 main()
