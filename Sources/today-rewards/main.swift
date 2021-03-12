@@ -1,31 +1,33 @@
 import Foundation
 import Combine
 
-let defaultAddress = "bnb1xwalxpaes9r0z0fqdy70j3kz6aayetegur38gl"
+let defaultAddresses = ["bnb1xwalxpaes9r0z0fqdy70j3kz6aayetegur38gl"]
 var bag = Set<AnyCancellable>()
 
-func readAddress() -> String {
+func readAddress() -> [String] {
     guard CommandLine.arguments.count > 1 else {
-        return defaultAddress
+        return defaultAddresses
     }
-    return CommandLine.arguments[1]
+    return CommandLine.arguments[1].split(separator: ",").map { String($0) }
 }
 
-func fetchRewards(address: String, sema: DispatchSemaphore) {
+func fetchRewards(addresses: [String], sema: DispatchSemaphore) {
     let limit = 100
-    let url = "https://api.binance.org/v1/staking/chains/bsc/delegators/\(address)/rewards?limit=\(limit)&offset=0"
-
-    URLSession.shared.dataTaskPublisher(for: URL(string: url)!)
-        .tryMap{ $0.data }
-        .decode(type: Rewards.self, decoder: JSONDecoder())
-        .sink { error in
-            print(error)
-            sema.signal()
-        } receiveValue: {
-            print(address: address, rewards: $0)
-            sema.signal()
-        }
-        .store(in: &bag)
+    for address in addresses {
+        let url = rewardsUrl(address: address, limit: limit)
+        URLSession.shared.dataTaskPublisher(for: url)
+            .tryMap{ $0.data }
+            .decode(type: Rewards.self, decoder: JSONDecoder())
+            .sink { error in
+                print(error)
+                sema.signal()
+            } receiveValue: {
+                print(address: address, rewards: $0)
+                sema.signal()
+            }
+            .store(in: &bag)
+        sema.wait()
+    }
 }
 
 func print(address: String, rewards: Rewards) {
@@ -48,7 +50,7 @@ func print(address: String, rewards: Rewards) {
 
 func main() {
     let sema = DispatchSemaphore(value: 0)
-    fetchRewards(address: readAddress(), sema: sema)
+    fetchRewards(addresses: readAddress(), sema: sema)
     sema.wait()
 }
 
