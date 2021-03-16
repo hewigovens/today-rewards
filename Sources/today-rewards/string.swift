@@ -8,3 +8,9 @@ extension String {
             .joined(separator: "...")
     }
 }
+
+extension Double {
+    func rounded(_ digit: Int = 2) -> String {
+        return String(format: "%.\(digit)f", self)
+    }
+}
