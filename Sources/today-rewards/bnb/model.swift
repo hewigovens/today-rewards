@@ -12,7 +12,7 @@ extension BNB {
         let valName: String
         let delegator: String
         let reward: Double
-        let rewardTime: String
+        let rewardTime: Date
     }
 
     struct Balance: Codable {
@@ -26,7 +26,7 @@ extension BNB.Rewards {
     func groupByDate() -> [String: [BNB.Reward]] {
         var map = [String: [BNB.Reward]]()
         for reward in rewardDetails {
-            let date = String(reward.rewardTime.split(separator: "T")[0])
+            let date = BNB.formatter.string(from: reward.rewardTime)
             if var rewards = map[date] {
                 rewards.append(reward)
                 map[date] = rewards

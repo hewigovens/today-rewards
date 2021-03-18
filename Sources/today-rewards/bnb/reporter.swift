@@ -9,11 +9,6 @@ extension BNB {
         var bag = Set<AnyCancellable>()
         let provider = Provider<BNB.Api>()
         let coingecko = Provider<Coingecko.Api>()
-        var formatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            return formatter
-        }()
 
         func fetchRewards(addresses: [String]) {
 
@@ -21,9 +16,10 @@ extension BNB {
             let price = coingecko.request(.simplePrice()).map(as: Coingecko.SimplePrice.self)
 
             var pairs = [PortfolioPair]()
+            
             for address in addresses {
                 let rewards = provider.request(.rewards(address: address, limit: limit))
-                    .map(as: BNB.Rewards.self)
+                    .map(as: BNB.Rewards.self, BNB.decoder)
                 let balance = provider.request(.balance(address: address))
                     .map(as: BNB.Balance.self)
                 pairs.append(Publishers.Zip(rewards, balance))
@@ -36,7 +32,7 @@ extension BNB {
                     for result in results {
                         let address = result.0.rewardDetails.first?.delegator ?? ""
                         let rewards = result.0.groupByDate()
-                        let today = self.formatter.string(from: Date())
+                        let today = BNB.formatter.string(from: Date())
                         self.digest(address: address, price: price, balance: result.1, rewards: rewards)
 
                         if let r = rewards[today] {
