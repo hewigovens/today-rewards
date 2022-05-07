@@ -31,7 +31,6 @@ extension BNB {
                 let rewards = result.0.groupByDate()
                 let today = BNB.formatter.string(from: Date())
                 self.digest(address: address, price: price, balance: result.1, rewards: rewards)
-
                 if let r = rewards[today] {
                     total += r.map { $0.reward }.reduce(0.0, +)
                 }

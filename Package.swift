@@ -12,7 +12,7 @@ let package = Package(
         .package(url: "https://github.com/hewigovens/enum-http", branch: "main")
     ],
     targets: [
-        .target(
+        .executableTarget(
             name: "today-rewards",
             dependencies: [
                 .productItem(name: "EnumHttp", package: "enum-http", condition: nil)

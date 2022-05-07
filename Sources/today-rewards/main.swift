@@ -1,6 +1,5 @@
 import Foundation
 
-@main
 struct TodayRewards {
 
     static func readAddress() -> [String] {
@@ -14,4 +13,13 @@ struct TodayRewards {
         let reporter = BNB.Reporter()
         try await reporter.fetchRewards(addresses: readAddress())
     }
+}
+
+Task {
+    try await TodayRewards.main()
+}
+
+print("==> fetching rewards, press any key to quit...") 
+if let name = readLine() {
+    print("==> bye!")
 }

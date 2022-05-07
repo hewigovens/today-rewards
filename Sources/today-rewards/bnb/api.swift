@@ -9,6 +9,7 @@ struct BNB {
 
     static let formatter: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
@@ -16,6 +17,7 @@ struct BNB {
     static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
         decoder.dateDecodingStrategy = .custom { decoder -> Date in
             let value = try decoder.singleValueContainer()
