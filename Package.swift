@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.5
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,16 +6,21 @@ import PackageDescription
 let package = Package(
     name: "today-rewards",
     platforms: [
-        .macOS(.v10_15)
+        .macOS(.v12),
     ],
     dependencies: [
+        .package(url: "https://github.com/hewigovens/enum-http", branch: "main")
     ],
     targets: [
         .target(
             name: "today-rewards",
-            dependencies: []),
+            dependencies: [
+                .productItem(name: "EnumHttp", package: "enum-http", condition: nil)
+            ]
+        ),
         .testTarget(
             name: "today-rewardsTests",
-            dependencies: ["today-rewards"]),
+            dependencies: ["today-rewards"]
+        ),
     ]
 )

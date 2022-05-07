@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "EnumHttp",
+        "repositoryURL": "https://github.com/hewigovens/enum-http",
+        "state": {
+          "branch": "main",
+          "revision": "09526179f9192705fff23636427c8bc70315b0fb",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

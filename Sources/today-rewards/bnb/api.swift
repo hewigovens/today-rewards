@@ -1,4 +1,5 @@
 import Foundation
+import EnumHttp
 
 struct BNB {
     enum Api: TargetType {
@@ -33,8 +34,8 @@ extension BNB.Api {
         return URL(string: "https://api.binance.org/v1/staking")!
     }
 
-    var method: String {
-        return "GET"
+    var method: EnumHttp.HttpMethod {
+        return .GET
     }
 
     var path: String {

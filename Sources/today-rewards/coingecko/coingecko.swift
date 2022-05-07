@@ -1,4 +1,5 @@
 import Foundation
+import EnumHttp
 
 struct Coingecko {
     enum Api {
@@ -12,8 +13,8 @@ extension Coingecko.Api: TargetType {
         return URL(string: "https://api.coingecko.com/api")!
     }
 
-    var method: String {
-        return "GET"
+    var method: HttpMethod {
+        return .GET
     }
 
     var path: String {
